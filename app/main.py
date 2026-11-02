@@ -8,7 +8,16 @@ from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
 from app import classifier, db
-from app.models import Category, Priority, Status, Ticket, TicketCreate, TicketUpdate
+from app.models import (
+    ALLOWED_CATEGORIES,
+    ALLOWED_PRIORITIES,
+    Category,
+    Priority,
+    Status,
+    Ticket,
+    TicketCreate,
+    TicketUpdate,
+)
 
 load_dotenv()
 
@@ -20,10 +29,18 @@ templates = Jinja2Templates(directory="templates")
 
 def _classify_with_fallback(title: str, description: str) -> dict:
     try:
-        return classifier.classify_ticket(title, description)
+        classification = classifier.classify_ticket(title, description)
     except Exception:
         logger.exception("classify_ticket failed, using fallback")
         return classifier._fallback()
+
+    if (
+        classification["category"] not in ALLOWED_CATEGORIES
+        or classification["priority"] not in ALLOWED_PRIORITIES
+    ):
+        logger.error("classify_ticket returned an invalid classification, using fallback")
+        return classifier._fallback()
+    return classification
 
 
 def _create_ticket_from_payload(title: str, description: str) -> Ticket:
