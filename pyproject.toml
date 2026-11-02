@@ -10,3 +10,6 @@ ignore = []
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/test_acceptance.py" = ["E501"]
