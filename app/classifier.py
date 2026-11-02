@@ -1,6 +1,8 @@
+import copy
 import json
 import logging
 import os
+import re
 
 from openai import OpenAI
 
@@ -31,6 +33,17 @@ _SYSTEM_PROMPT = (
 
 logger = logging.getLogger(__name__)
 
+_CODE_FENCE_RE = re.compile(r"^```(?:json)?\s*\n?(.*?)\n?```$", re.DOTALL)
+
+
+def _fallback() -> dict:
+    return copy.deepcopy(FALLBACK_CLASSIFICATION)
+
+
+def _strip_code_fence(raw: str) -> str:
+    match = _CODE_FENCE_RE.match(raw.strip())
+    return match.group(1) if match else raw
+
 
 def _build_client() -> OpenAI:
     return OpenAI(
@@ -54,16 +67,26 @@ def _call_llm(client: OpenAI, title: str, description: str) -> str:
 
 
 def _parse_llm_response(raw: str | None) -> dict | None:
+    if raw is None:
+        return None
     try:
-        return json.loads(raw)
+        parsed = json.loads(_strip_code_fence(raw))
     except (json.JSONDecodeError, TypeError):
         return None
+    return parsed if isinstance(parsed, dict) else None
 
 
 def _normalize_tags(raw_tags: object) -> list[str]:
     if not isinstance(raw_tags, list):
         return []
-    tags = [t.lower() for t in raw_tags if isinstance(t, str) and len(t) <= 30]
+    tags: list[str] = []
+    for tag in raw_tags:
+        if not isinstance(tag, str):
+            continue
+        cleaned = tag.strip()
+        if not cleaned or len(cleaned) > 30:
+            continue
+        tags.append(cleaned.lower())
     return tags[:5]
 
 
@@ -84,28 +107,32 @@ def classify_ticket(title: str, description: str) -> dict:
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
         logger.warning("OPENROUTER_API_KEY not set; using fallback classification")
-        return FALLBACK_CLASSIFICATION
+        return _fallback()
 
-    client = _build_client()
-    raw_response: str | None = None
+    try:
+        client = _build_client()
+        raw_response: str | None = None
 
-    for attempt in range(1, _MAX_ATTEMPTS + 1):
-        try:
-            raw_response = _call_llm(client, title, description)
-            break
-        except Exception:
-            logger.warning("LLM call failed (attempt %d/%d)", attempt, _MAX_ATTEMPTS)
-            if attempt == _MAX_ATTEMPTS:
-                return FALLBACK_CLASSIFICATION
+        for attempt in range(1, _MAX_ATTEMPTS + 1):
+            try:
+                raw_response = _call_llm(client, title, description)
+                break
+            except Exception:
+                logger.warning("LLM call failed (attempt %d/%d)", attempt, _MAX_ATTEMPTS)
+                if attempt == _MAX_ATTEMPTS:
+                    return _fallback()
 
-    data = _parse_llm_response(raw_response)
-    if data is None:
-        logger.warning("LLM response was not valid JSON; using fallback")
-        return FALLBACK_CLASSIFICATION
+        data = _parse_llm_response(raw_response)
+        if data is None:
+            logger.warning("LLM response was not valid JSON object; using fallback")
+            return _fallback()
 
-    validated = _validate_classification(data)
-    if validated is None:
-        logger.warning("LLM response had invalid category/priority; using fallback")
-        return FALLBACK_CLASSIFICATION
+        validated = _validate_classification(data)
+        if validated is None:
+            logger.warning("LLM response had invalid category/priority; using fallback")
+            return _fallback()
 
-    return validated
+        return validated
+    except Exception:
+        logger.exception("Unexpected error while classifying ticket; using fallback")
+        return _fallback()
