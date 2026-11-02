@@ -5,11 +5,11 @@ from pydantic import BaseModel, ConfigDict, StringConstraints, field_validator, 
 
 ALLOWED_CATEGORIES = {"bug", "feature_request", "question", "urgent"}
 ALLOWED_PRIORITIES = {"P1", "P2", "P3"}
-ALLOWED_STATUSES = {"open", "in_progress", "closed"}
+ALLOWED_STATUSES = {"open", "in_progress", "resolved", "closed"}
 
 Category = Literal["bug", "feature_request", "question", "urgent"]
 Priority = Literal["P1", "P2", "P3"]
-Status = Literal["open", "in_progress", "closed"]
+Status = Literal["open", "in_progress", "resolved", "closed"]
 
 TitleStr = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)

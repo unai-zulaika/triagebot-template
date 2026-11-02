@@ -7,7 +7,7 @@
   <td class="px-3 py-2 text-sm">{{ t.tags | join(', ') }}</td>
   <td class="px-3 py-2 text-sm">
     <select name="status" hx-patch="/ui/tickets/{{ t.id }}" hx-target="#ticket-row-{{ t.id }}" hx-swap="outerHTML">
-      {% for s in ["open", "in_progress", "closed"] %}
+      {% for s in ["open", "in_progress", "resolved", "closed"] %}
       <option value="{{ s }}" {% if s == t.status %}selected{% endif %}>{{ s }}</option>
       {% endfor %}
     </select>

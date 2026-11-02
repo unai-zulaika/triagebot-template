@@ -39,7 +39,7 @@
       </select>
       <select name="status">
         <option value="">Estado (todos)</option>
-        {% for s in ["open", "in_progress", "closed"] %}
+        {% for s in ["open", "in_progress", "resolved", "closed"] %}
         <option value="{{ s }}">{{ s }}</option>
         {% endfor %}
       </select>
