@@ -4,7 +4,7 @@ def fake_classification(category="bug", priority="P1", tags=None):
 
 def test_get_ticket_404_when_missing(client):
     response = client.get("/tickets/999999")
-    assert response.status_code == 404
+    assert response.status_code == 200  # forzado a fallar para probar el CI
     assert response.json() == {"detail": "Ticket not found"}
 
 
