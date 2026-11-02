@@ -12,7 +12,42 @@
     <h1 class="text-3xl font-bold">TriageBot</h1>
     <p class="mt-2 text-slate-600">Tablero de incidencias con clasificación automática por IA.</p>
 
-    <!-- TODO: formulario + filtros + tabla HTMX -->
+    <form hx-post="/ui/tickets" hx-target="#tickets-section" hx-swap="outerHTML" class="mt-6 space-y-3 max-w-xl">
+      <div>
+        <label class="block text-sm font-medium">Título</label>
+        <input type="text" name="title" class="mt-1 w-full rounded border-slate-300 px-3 py-2">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Descripción</label>
+        <textarea name="description" class="mt-1 w-full rounded border-slate-300 px-3 py-2"></textarea>
+      </div>
+      <button type="submit" class="rounded bg-slate-900 px-4 py-2 text-white">Crear ticket</button>
+    </form>
+
+    <form class="mt-6 flex gap-3" hx-get="/ui/tickets" hx-target="#tickets-section" hx-swap="outerHTML" hx-trigger="change">
+      <select name="category">
+        <option value="">Categoría (todas)</option>
+        {% for c in ["bug", "feature_request", "question", "urgent"] %}
+        <option value="{{ c }}">{{ c }}</option>
+        {% endfor %}
+      </select>
+      <select name="priority">
+        <option value="">Prioridad (todas)</option>
+        {% for p in ["P1", "P2", "P3"] %}
+        <option value="{{ p }}">{{ p }}</option>
+        {% endfor %}
+      </select>
+      <select name="status">
+        <option value="">Estado (todos)</option>
+        {% for s in ["open", "in_progress", "closed"] %}
+        <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </form>
+
+    <div class="mt-6">
+      {% include "_tickets_table.html" %}
+    </div>
   </main>
 </body>
 </html>

@@ -1,16 +1,44 @@
-<table class="min-w-full divide-y divide-slate-200 bg-white shadow-sm ring-1 ring-slate-200 rounded-lg overflow-hidden">
-  <thead class="bg-slate-100">
-    <tr>
-      <th class="px-3 py-2 text-left text-sm font-semibold">ID</th>
-      <th class="px-3 py-2 text-left text-sm font-semibold">Título</th>
-      <th class="px-3 py-2 text-left text-sm font-semibold">Categoría</th>
-      <th class="px-3 py-2 text-left text-sm font-semibold">Prioridad</th>
-      <th class="px-3 py-2 text-left text-sm font-semibold">Tags</th>
-      <th class="px-3 py-2 text-left text-sm font-semibold">Estado</th>
-      <th class="px-3 py-2 text-left text-sm font-semibold">Creado</th>
-    </tr>
-  </thead>
-  <tbody id="tickets-table-body">
-    <!-- TODO: renderizar tickets con Jinja2 -->
-  </tbody>
-</table>
+{% macro ticket_row(t) %}
+<tr id="ticket-row-{{ t.id }}">
+  <td class="px-3 py-2 text-sm">{{ t.id }}</td>
+  <td class="px-3 py-2 text-sm">{{ t.title }}</td>
+  <td class="px-3 py-2 text-sm">{{ t.category }}</td>
+  <td class="px-3 py-2 text-sm">{{ t.priority }}</td>
+  <td class="px-3 py-2 text-sm">{{ t.tags | join(', ') }}</td>
+  <td class="px-3 py-2 text-sm">
+    <select name="status" hx-patch="/ui/tickets/{{ t.id }}" hx-target="#ticket-row-{{ t.id }}" hx-swap="outerHTML">
+      {% for s in ["open", "in_progress", "closed"] %}
+      <option value="{{ s }}" {% if s == t.status %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <select name="priority" hx-patch="/ui/tickets/{{ t.id }}" hx-target="#ticket-row-{{ t.id }}" hx-swap="outerHTML">
+      {% for p in ["P1", "P2", "P3"] %}
+      <option value="{{ p }}" {% if p == t.priority %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+  </td>
+  <td class="px-3 py-2 text-sm">{{ t.created_at }}</td>
+</tr>
+{% endmacro %}
+
+<div id="tickets-section">
+  {% if error %}
+  <p class="mb-3 rounded bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
+  {% endif %}
+  <table class="min-w-full divide-y divide-slate-200 bg-white shadow-sm ring-1 ring-slate-200 rounded-lg overflow-hidden">
+    <thead class="bg-slate-100">
+      <tr>
+        <th class="px-3 py-2 text-left text-sm font-semibold">ID</th>
+        <th class="px-3 py-2 text-left text-sm font-semibold">Título</th>
+        <th class="px-3 py-2 text-left text-sm font-semibold">Categoría</th>
+        <th class="px-3 py-2 text-left text-sm font-semibold">Prioridad</th>
+        <th class="px-3 py-2 text-left text-sm font-semibold">Tags</th>
+        <th class="px-3 py-2 text-left text-sm font-semibold">Estado</th>
+        <th class="px-3 py-2 text-left text-sm font-semibold">Creado</th>
+      </tr>
+    </thead>
+    <tbody id="tickets-table-body">
+      {% for t in tickets %}{{ ticket_row(t) }}{% endfor %}
+    </tbody>
+  </table>
+</div>
