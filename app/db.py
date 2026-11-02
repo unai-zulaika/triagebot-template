@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from app.models import Ticket
 
 _DEFAULT_URL = "sqlite:///triagebot.db"
+_SQLITE_INT_RANGE = (-(2**63), 2**63 - 1)  # SQLite INTEGER es un entero de 64 bits
 
 
 def _db_path() -> str:
@@ -97,6 +98,8 @@ def list_tickets(
 
 
 def get_ticket(ticket_id: int) -> Ticket | None:
+    if not _SQLITE_INT_RANGE[0] <= ticket_id <= _SQLITE_INT_RANGE[1]:
+        return None
     conn = get_connection()
     try:
         row = conn.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
@@ -106,6 +109,8 @@ def get_ticket(ticket_id: int) -> Ticket | None:
 
 
 def update_ticket(ticket_id: int, status: str | None, priority: str | None) -> Ticket | None:
+    if not _SQLITE_INT_RANGE[0] <= ticket_id <= _SQLITE_INT_RANGE[1]:
+        return None
     now = datetime.now(UTC).isoformat()
     conn = get_connection()
     try:

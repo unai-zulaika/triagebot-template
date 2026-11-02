@@ -20,10 +20,20 @@ templates = Jinja2Templates(directory="templates")
 
 def _classify_with_fallback(title: str, description: str) -> dict:
     try:
-        return classifier.classify_ticket(title, description)
+        classification = classifier.classify_ticket(title, description)
     except Exception:
         logger.exception("classify_ticket failed, using fallback")
         return classifier._fallback()
+
+    validated = (
+        classifier._validate_classification(classification)
+        if isinstance(classification, dict)
+        else None
+    )
+    if validated is None:
+        logger.error("classify_ticket returned an invalid classification, using fallback")
+        return classifier._fallback()
+    return validated
 
 
 def _create_ticket_from_payload(title: str, description: str) -> Ticket:

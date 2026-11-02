@@ -177,3 +177,4 @@ Ambigüedades del BRIEF resueltas por nosotros (añadid aquí las nuevas):
 | Diferencia entre tag y categoría | Categoría: una de 4, fija. Tags: etiquetas libres para buscar a ojo |
 | Tickets creados a la vez | SQLite serializa escrituras; una conexión por petición basta |
 | ¿Estado "resuelto" antes de cerrar? | Sí, se añade `resolved` (petición de Marta). Sin máquina de estados: cualquier `status` se puede cambiar a cualquier otro vía `PATCH`, incluida la reapertura a `open` desde `resolved` o `closed` |
+| ¿IDs fuera del rango de SQLite (enteros de 64 bits)? | Se tratan igual que un id inexistente → `404`, no `500` |
