@@ -48,3 +48,36 @@ def test_patch_ticket_rejects_empty_body(client, monkeypatch):
     response = client.patch(f"/tickets/{ticket_id}", json={})
 
     assert response.status_code == 422
+
+
+def test_patch_ticket_to_resolved(client, monkeypatch):
+    monkeypatch.setattr("app.classifier.classify_ticket", lambda t, d: fake_classification())
+    created = client.post("/tickets", json={"title": "Algo", "description": "Descripcion valida"})
+    ticket_id = created.json()["id"]
+
+    response = client.patch(f"/tickets/{ticket_id}", json={"status": "resolved"})
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "resolved"
+
+
+def test_patch_ticket_reopens_from_resolved(client, monkeypatch):
+    monkeypatch.setattr("app.classifier.classify_ticket", lambda t, d: fake_classification())
+    created = client.post("/tickets", json={"title": "Algo", "description": "Descripcion valida"})
+    ticket_id = created.json()["id"]
+    client.patch(f"/tickets/{ticket_id}", json={"status": "resolved"})
+
+    response = client.patch(f"/tickets/{ticket_id}", json={"status": "open"})
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "open"
+
+
+def test_patch_ticket_rejects_invalid_status(client, monkeypatch):
+    monkeypatch.setattr("app.classifier.classify_ticket", lambda t, d: fake_classification())
+    created = client.post("/tickets", json={"title": "Algo", "description": "Descripcion valida"})
+    ticket_id = created.json()["id"]
+
+    response = client.patch(f"/tickets/{ticket_id}", json={"status": "not-a-status"})
+
+    assert response.status_code == 422

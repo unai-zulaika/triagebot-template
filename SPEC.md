@@ -31,7 +31,7 @@ dependencias sin acordarlo en equipo.
 | `category` | str | `bug` · `feature_request` · `question` · `urgent` |
 | `priority` | str | `P1` · `P2` · `P3` |
 | `tags` | list[str] | 0–5 tags, minúsculas, cada una de 1–30 caracteres. Puede estar vacía |
-| `status` | str | `open` · `in_progress` · `closed`. Al crear: `open` |
+| `status` | str | `open` · `in_progress` · `resolved` · `closed`. Al crear: `open` |
 | `created_at` | datetime | UTC, ISO 8601, lo pone el servidor al crear |
 | `updated_at` | datetime | UTC, ISO 8601. Igual a `created_at` al crear; cambia en cada PATCH |
 
@@ -59,7 +59,9 @@ Detalles:
 - **GET /tickets**: los filtros se combinan con AND. Sin filtros devuelve todos.
   Orden: más recientes primero (`created_at` descendente). Sin paginación.
 - **PATCH**: solo acepta `status` y `priority`; al menos uno de los dos. Cualquier otro
-  campo → `422`. Actualiza `updated_at`.
+  campo → `422`. Actualiza `updated_at`. No hay transiciones restringidas: se puede volver
+  a `open` desde cualquier otro estado (reapertura), igual que cualquier otro cambio de
+  `status`.
 - Errores `404` con el formato estándar de FastAPI: `{"detail": "Ticket not found"}`.
 
 ## 5. Clasificador (`app/classifier.py`)
@@ -174,3 +176,4 @@ Ambigüedades del BRIEF resueltas por nosotros (añadid aquí las nuevas):
 | ¿Paginación? | No. Volumen esperado de cientos de tickets |
 | Diferencia entre tag y categoría | Categoría: una de 4, fija. Tags: etiquetas libres para buscar a ojo |
 | Tickets creados a la vez | SQLite serializa escrituras; una conexión por petición basta |
+| ¿Estado "resuelto" antes de cerrar? | Sí, se añade `resolved` (petición de Marta). Sin máquina de estados: cualquier `status` se puede cambiar a cualquier otro vía `PATCH`, incluida la reapertura a `open` desde `resolved` o `closed` |
