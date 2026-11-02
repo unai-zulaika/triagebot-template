@@ -1,9 +1,12 @@
 import logging
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from app import classifier, db
 from app.models import Ticket, TicketCreate
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
