@@ -66,6 +66,65 @@ def insert_ticket(
     return _row_to_ticket(row)
 
 
+def list_tickets(
+    category: str | None = None,
+    priority: str | None = None,
+    status: str | None = None,
+) -> list[Ticket]:
+    clauses = []
+    params: list[str] = []
+    if category is not None:
+        clauses.append("category = ?")
+        params.append(category)
+    if priority is not None:
+        clauses.append("priority = ?")
+        params.append(priority)
+    if status is not None:
+        clauses.append("status = ?")
+        params.append(status)
+
+    query = "SELECT * FROM tickets"
+    if clauses:
+        query += " WHERE " + " AND ".join(clauses)
+    query += " ORDER BY created_at DESC"
+
+    conn = get_connection()
+    try:
+        rows = conn.execute(query, params).fetchall()
+    finally:
+        conn.close()
+    return [_row_to_ticket(row) for row in rows]
+
+
+def get_ticket(ticket_id: int) -> Ticket | None:
+    conn = get_connection()
+    try:
+        row = conn.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
+    finally:
+        conn.close()
+    return _row_to_ticket(row) if row else None
+
+
+def update_ticket(ticket_id: int, status: str | None, priority: str | None) -> Ticket | None:
+    now = datetime.now(UTC).isoformat()
+    conn = get_connection()
+    try:
+        existing = conn.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
+        if existing is None:
+            return None
+        new_status = status if status is not None else existing["status"]
+        new_priority = priority if priority is not None else existing["priority"]
+        conn.execute(
+            "UPDATE tickets SET status = ?, priority = ?, updated_at = ? WHERE id = ?",
+            (new_status, new_priority, now, ticket_id),
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
+    finally:
+        conn.close()
+    return _row_to_ticket(row)
+
+
 def _row_to_ticket(row: sqlite3.Row) -> Ticket:
     return Ticket(
         id=row["id"],
