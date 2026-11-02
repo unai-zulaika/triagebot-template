@@ -1,10 +1,10 @@
 import logging
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from app import classifier, db
-from app.models import Ticket, TicketCreate
+from app.models import Category, Priority, Status, Ticket, TicketCreate, TicketUpdate
 
 load_dotenv()
 
@@ -35,8 +35,31 @@ def create_ticket(payload: TicketCreate) -> Ticket:
     )
 
 
+@app.get("/tickets", response_model=list[Ticket])
+def list_tickets(
+    category: Category | None = None,
+    priority: Priority | None = None,
+    status: Status | None = None,
+) -> list[Ticket]:
+    return db.list_tickets(category=category, priority=priority, status=status)
+
+
+@app.get("/tickets/{ticket_id}", response_model=Ticket)
+def get_ticket(ticket_id: int) -> Ticket:
+    ticket = db.get_ticket(ticket_id)
+    if ticket is None:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    return ticket
+
+
+@app.patch("/tickets/{ticket_id}", response_model=Ticket)
+def update_ticket(ticket_id: int, payload: TicketUpdate) -> Ticket:
+    ticket = db.update_ticket(ticket_id, status=payload.status, priority=payload.priority)
+    if ticket is None:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    return ticket
+
+
 # TODO: implementar durante el bootcamp.
 # Endpoints esperados por los tests:
-# - GET /tickets
-# - PATCH /tickets/{ticket_id}
 # - GET /
