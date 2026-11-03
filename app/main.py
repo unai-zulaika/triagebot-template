@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Literal
 
 from dotenv import load_dotenv
@@ -20,7 +21,10 @@ templates = Jinja2Templates(directory="templates")
 
 def _classify_with_fallback(title: str, description: str) -> dict:
     try:
-        classification = classifier.classify_ticket(title, description)
+        if os.environ.get("TRIAGE_USE_KG") == "1":
+            classification = classifier.classify_ticket_with_kg(title, description)
+        else:
+            classification = classifier.classify_ticket(title, description)
     except Exception:
         logger.exception("classify_ticket failed, using fallback")
         return classifier._fallback()

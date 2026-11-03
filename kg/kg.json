@@ -1,0 +1,60 @@
+{
+  "_doc": "Knowledge graph mínimo (30 entidades) del soporte interno de la empresa de Marta. Tipos: component, team, criticality, signal, category.",
+  "nodes": [
+    {"id": "crm", "type": "component", "label": "CRM", "aliases": ["crm", "oportunidad", "oportunidades"]},
+    {"id": "erp", "type": "component", "label": "ERP / facturación", "aliases": ["erp", "factura", "facturas", "catálogo", "tarifas"]},
+    {"id": "correo", "type": "component", "label": "Correo / Outlook", "aliases": ["correo", "outlook", "buzón", "bandeja de entrada", "lista de distribución", "teams"]},
+    {"id": "red", "type": "component", "label": "Red / VPN", "aliases": ["vpn", "red", "wifi", "sin conexión", "tiene conexión"]},
+    {"id": "telefonia", "type": "component", "label": "Telefonía / centralita", "aliases": ["centralita", "llamadas", "teléfono de atención", "extensión"]},
+    {"id": "hardware", "type": "component", "label": "Puesto de trabajo (hardware)", "aliases": ["portátil", "ordenador", "pantalla azul", "impresora", "imprimir", "monitor", "dock", "auriculares"]},
+    {"id": "intranet", "type": "component", "label": "Intranet / portal", "aliases": ["intranet", "portal", "buscador", "cuadro de mando", "panel de dirección", "dashboard", "encuesta"]},
+    {"id": "tickets_tool", "type": "component", "label": "Herramienta de tickets", "aliases": ["herramienta de tickets", "listado de tickets", "un ticket", "los tickets"]},
+    {"id": "rrhh", "type": "component", "label": "RRHH (nómina, fichaje)", "aliases": ["nómina", "fichaje", "fichar", "vacaciones", "rrhh", "portal de empleado", "asuntos propios"]},
+    {"id": "gastos", "type": "component", "label": "App de gastos", "aliases": ["gastos", "gasto", "justificante", "kilometraje"]},
+    {"id": "web_cliente", "type": "component", "label": "Web corporativa (pública)", "aliases": ["web corporativa", "página pública", "portal de clientes", "web pública"]},
+    {"id": "operaciones", "type": "component", "label": "Almacén / pedidos / TPV", "aliases": ["pedido", "pedidos", "almacén", "tpv", "datáfono", "código de barras", "mercancía"]},
+    {"id": "seguridad", "type": "component", "label": "Cuentas y seguridad", "aliases": ["contraseña", "doble factor", "código de verificación", "sms", "inicio de sesión"]},
+
+    {"id": "eq_sistemas", "type": "team", "label": "Equipo Sistemas"},
+    {"id": "eq_aplicaciones", "type": "team", "label": "Equipo Aplicaciones"},
+    {"id": "eq_negocio", "type": "team", "label": "Equipo Negocio digital"},
+    {"id": "eq_seguridad", "type": "team", "label": "Equipo Seguridad"},
+
+    {"id": "crit_alta", "type": "criticality", "label": "Criticidad alta", "bug_priority": "P2"},
+    {"id": "crit_media", "type": "criticality", "label": "Criticidad media", "bug_priority": "P3"},
+    {"id": "crit_baja", "type": "criticality", "label": "Criticidad baja", "bug_priority": "P3"},
+
+    {"id": "sig_fallo", "type": "signal", "label": "Señal: algo falla", "aliases": ["error", "no funciona", "no carga", "se cierra", "sale mal", "no devuelve", "no llega", "no deja", "no consigo", "no puedo", "duplica", "desordenad", "no se actualiza", "no responde", "se congela", "falla", "en blanco", "no coincide", "dos entradas", "pierdo"]},
+    {"id": "sig_bloqueo", "type": "signal", "label": "Señal: negocio parado", "aliases": ["se ha caído", "caído", "nadie", "todo el equipo", "toda la planta", "ningún equipo", "ninguno de", "bloqueo total", "no entran", "cola de gente", "service unavailable", "todas las tarjetas"]},
+    {"id": "sig_plazo", "type": "signal", "label": "Señal: plazo inminente", "aliases": ["en 30 minutos", "media hora", "en 1 hora", "en una hora", "demo", "demostración", "comité", "firma hoy", "de inmediato"]},
+    {"id": "sig_seguridad", "type": "signal", "label": "Señal: incidente de seguridad", "aliases": ["fuga", "intento de inicio de sesión", "intentado entrar", "comprometida", "pérdida de datos", "destinatario equivocado", "phishing"]},
+    {"id": "sig_peticion", "type": "signal", "label": "Señal: petición de mejora", "aliases": ["añadir", "permitir", "sería útil", "propuesta", "sugerencia", "petición", "me gustaría", "me vendría", "podríais", "sería ideal", "sería muy práctico"]},
+    {"id": "sig_duda", "type": "signal", "label": "Señal: duda de uso", "aliases": ["¿", "cómo", "dónde", "puedo"]},
+
+    {"id": "bug", "type": "category", "label": "bug"},
+    {"id": "feature_request", "type": "category", "label": "feature_request"},
+    {"id": "question", "type": "category", "label": "question"},
+    {"id": "urgent", "type": "category", "label": "urgent"}
+  ],
+  "edges": [
+    ["crm", "gestionado_por", "eq_aplicaciones"], ["erp", "gestionado_por", "eq_aplicaciones"],
+    ["intranet", "gestionado_por", "eq_aplicaciones"], ["tickets_tool", "gestionado_por", "eq_aplicaciones"],
+    ["rrhh", "gestionado_por", "eq_aplicaciones"], ["gastos", "gestionado_por", "eq_aplicaciones"],
+    ["red", "gestionado_por", "eq_sistemas"], ["telefonia", "gestionado_por", "eq_sistemas"],
+    ["hardware", "gestionado_por", "eq_sistemas"],
+    ["web_cliente", "gestionado_por", "eq_negocio"], ["operaciones", "gestionado_por", "eq_negocio"],
+    ["seguridad", "gestionado_por", "eq_seguridad"], ["correo", "gestionado_por", "eq_seguridad"],
+
+    ["red", "criticidad", "crit_alta"], ["telefonia", "criticidad", "crit_alta"],
+    ["erp", "criticidad", "crit_alta"], ["web_cliente", "criticidad", "crit_alta"],
+    ["operaciones", "criticidad", "crit_alta"], ["seguridad", "criticidad", "crit_alta"],
+    ["crm", "criticidad", "crit_media"], ["correo", "criticidad", "crit_media"],
+    ["rrhh", "criticidad", "crit_media"],
+    ["hardware", "criticidad", "crit_baja"], ["intranet", "criticidad", "crit_baja"],
+    ["tickets_tool", "criticidad", "crit_baja"], ["gastos", "criticidad", "crit_baja"],
+
+    ["sig_fallo", "indica", "bug"], ["sig_bloqueo", "indica", "urgent"],
+    ["sig_plazo", "indica", "urgent"], ["sig_seguridad", "indica", "urgent"],
+    ["sig_peticion", "indica", "feature_request"], ["sig_duda", "indica", "question"]
+  ]
+}

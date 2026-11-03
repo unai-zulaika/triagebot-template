@@ -27,3 +27,5 @@ venv/
 
 # Logs
 *.log
+kg/report.html
+kg/results.json
