@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TriageBot · Demo KG</title>
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<style>
+  :root { --bg:#f7f7f5; --card:#fff; --ink:#1d1d1f; --muted:#6b6b70; --line:#e3e3e0;
+          --ok:#1f8a4c; --ko:#c0392b; --accent:#2f5bd3; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:20px 24px 8px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .muted { color:var(--muted); }
+  .cards { display:flex; gap:12px; padding:8px 24px; flex-wrap:wrap; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; min-width:210px; }
+  .card h3 { margin:0 0 6px; font-size:13px; }
+  .card .big { font-size:24px; font-weight:700; }
+  .grid { display:grid; grid-template-columns: 1.4fr 1fr; gap:12px; padding:8px 24px; }
+  #graph { height:560px; background:var(--card); border:1px solid var(--line); border-radius:10px; }
+  #side { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; overflow:auto; max-height:560px; }
+  #side ol { padding-left:18px; } #side code { background:#f0f0ee; padding:1px 4px; border-radius:4px; }
+  .legend span { display:inline-block; margin-right:10px; font-size:12px; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+  table { width:calc(100% - 48px); margin:12px 24px 32px; border-collapse:collapse; background:var(--card); border:1px solid var(--line); }
+  th, td { padding:7px 9px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
+  th { background:#efefec; position:sticky; top:0; }
+  tr.sel { background:#eef3ff; } tbody tr { cursor:pointer; } tbody tr:hover { background:#f5f7ff; }
+  .ok { color:var(--ok); font-weight:600; } .ko { color:var(--ko); font-weight:600; }
+  .pill { display:inline-block; padding:0 6px; border-radius:8px; background:#f0f0ee; font-size:12px; margin:1px; }
+  #fallback { display:none; padding:12px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Clasificación de tickets contra un knowledge graph</h1>
+  <div class="muted">Generado __DATE__ · __LLM_NOTE__ · Etiquetas de referencia: <code>kg/gold.json</code> (50 tickets etiquetados a mano: 30 de diseño, 20 de prueba)</div>
+</header>
+<div class="cards" id="cards"></div>
+<div class="grid">
+  <div><div id="graph"></div><div id="fallback"></div>
+    <div class="legend muted" id="legend" style="padding:6px 2px"></div></div>
+  <div id="side"><h3 style="margin-top:0">Cómo leerlo</h3>
+    <p>Haz clic en una fila de la tabla: el grafo resalta las entidades que se han encontrado en ese ticket y aquí aparece el camino que han seguido las reglas.</p>
+    <p>Haz clic en un nodo para ver sus alias (las palabras que lo activan).</p></div>
+</div>
+<table>
+  <thead><tr><th>#</th><th>Conjunto</th><th>Ticket</th><th>Referencia</th><th>Reglas del grafo</th><th>Solo LLM</th><th>LLM + grafo</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+<script>
+const GRAPH = __GRAPH__;
+const RESULT = __RESULT__;
+const COLORS = { component:"#5b8def", team:"#f2a541", criticality:"#e05d5d", signal:"#9b6bd3", category:"#3fb27f" };
+const NAMES = { component:"Componente", team:"Equipo", criticality:"Criticidad", signal:"Señal", category:"Categoría" };
+const pct = x => Math.round(x*100) + "%";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+document.getElementById("legend").innerHTML = Object.entries(NAMES)
+  .map(([k,v]) => `<span><i class="dot" style="background:${COLORS[k]}"></i>${v}</span>`).join("");
+
+const SPLITS = { prueba:"Prueba (no vistos al construir el grafo)", "diseño":"Diseño (vistos al construir el grafo)" };
+const MAIN = Object.keys(RESULT.summary.prueba || {}).length ? "prueba" : "diseño";
+document.getElementById("cards").innerHTML = Object.keys(RESULT.summary[MAIN] || {}).map(m => {
+  const p = RESULT.summary[MAIN][m], d = MAIN === "prueba" ? (RESULT.summary["diseño"] || {})[m] : null;
+  return `<div class="card"><h3>${p.label}</h3>
+    <div class="big">${pct(p.both)}</div>
+    <div class="muted">categoría y prioridad correctas · ${MAIN}, ${p.n} tickets</div>
+    <div>Categoría ${pct(p.category)} · Prioridad ${pct(p.priority)}${p.label === "Solo LLM" ? "" : " · Componente " + pct(p.component)}</div>
+    ${d ? `<div class="muted" style="margin-top:4px">Diseño (${d.n}, inflado): ${pct(d.both)}</div>` : ""}
+  </div>`; }).join("");
+
+let network = null;
+if (window.vis) {
+  const nodes = new vis.DataSet(GRAPH.nodes.map(n => ({ id:n.id, label:n.label, group:n.type,
+    color:{ background:COLORS[n.type], border:COLORS[n.type], highlight:{ background:"#111", border:"#111" } },
+    font:{ color:"#1d1d1f", size:13 }, shape: n.type === "category" ? "box" : "dot", size:14 })));
+  const edges = new vis.DataSet(GRAPH.edges.map((e,i) => ({ id:i, from:e.from, to:e.to, label:e.label,
+    arrows:"to", font:{ size:9, color:"#888", strokeWidth:0 }, color:{ color:"#c9c9c4", highlight:"#111" } })));
+  network = new vis.Network(document.getElementById("graph"), { nodes, edges },
+    { physics:{ solver:"forceAtlas2Based", stabilization:{ iterations:300 } }, interaction:{ hover:true } });
+  network.on("click", p => {
+    if (!p.nodes.length) return;
+    const n = GRAPH.nodes.find(x => x.id === p.nodes[0]);
+    document.getElementById("side").innerHTML = `<h3 style="margin-top:0">${esc(n.label)} <span class="muted">(${NAMES[n.type]})</span></h3>
+      <p><code>${esc(n.id)}</code>${n.bug_priority ? " · un bug aquí es " + n.bug_priority : ""}</p>
+      ${n.aliases.length ? "<p><b>Alias:</b> " + n.aliases.map(a => `<span class="pill">${esc(a)}</span>`).join(" ") + "</p>" : ""}
+      <p><b>Relaciones:</b></p><ul>${GRAPH.edges.filter(e => e.from===n.id || e.to===n.id)
+        .map(e => `<li>${esc(e.from)} —${esc(e.label)}→ ${esc(e.to)}</li>`).join("")}</ul>`;
+  });
+} else {
+  document.getElementById("graph").style.display = "none";
+  const fb = document.getElementById("fallback"); fb.style.display = "block";
+  fb.innerHTML = "<b>No se pudo cargar la librería del grafo (¿sin internet?). Relaciones:</b><ul>" +
+    GRAPH.edges.map(e => `<li>${e.from} —${e.label}→ ${e.to}</li>`).join("") + "</ul>";
+}
+
+function cell(pred, ok) {
+  if (!pred) return '<span class="muted">—</span>';
+  const good = ok.category && ok.priority;
+  return `<span class="${good ? "ok" : "ko"}">${good ? "✓" : "✗"}</span> ${esc(pred.category)} · ${esc(pred.priority)}<br>` +
+    (pred.tags || []).map(t => `<span class="pill">${esc(t)}</span>`).join("") +
+    (pred.reason && pred.source === "llm+kg" ? `<div class="muted">${esc(pred.reason)}</div>` : "");
+}
+
+const tbody = document.getElementById("rows");
+RESULT.rows.forEach((r, i) => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${i+1}</td><td><span class="pill">${esc(r.split)}</span></td><td><b>${esc(r.title)}</b><div class="muted">${esc(r.description)}</div></td>
+    <td>${esc(r.gold.category)} · ${esc(r.gold.priority)}<br>${r.gold.component ? `<span class="pill">${esc(r.gold.component)}</span>` : '<span class="muted">fuera del grafo</span>'}</td>
+    <td>${cell(r.preds.kg, r.ok.kg)}</td><td>${cell(r.preds.llm, r.ok.llm || {})}</td><td>${cell(r.preds.llm_kg, r.ok.llm_kg || {})}</td>`;
+  tr.onclick = () => {
+    document.querySelectorAll("tr.sel").forEach(x => x.classList.remove("sel")); tr.classList.add("sel");
+    document.querySelector(".grid").scrollIntoView({ behavior: "smooth" });
+    if (network) { network.selectNodes(r.entities); network.fit({ nodes: r.entities.length ? r.entities : undefined, animation:true }); }
+    document.getElementById("side").innerHTML = `<h3 style="margin-top:0">${esc(r.title)}</h3>
+      <p>Referencia: <b>${esc(r.gold.category)} · ${esc(r.gold.priority)}</b> (componente ${esc(r.gold.component || "fuera del grafo")})</p>
+      <p>Entidades encontradas: ${r.entities.map(e => `<span class="pill">${esc(e)}</span>`).join(" ") || "ninguna"}</p>
+      <p><b>Camino de las reglas:</b></p><ol>${r.explanation.map(x => `<li><code>${esc(x)}</code></li>`).join("")}</ol>
+      ${r.preds.llm_kg && r.preds.llm_kg.reason ? `<p><b>Razón del LLM + grafo:</b> ${esc(r.preds.llm_kg.reason)}</p>` : ""}`;
+  };
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>

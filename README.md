@@ -96,6 +96,6 @@ Los detalles obligatorios están en:
 
 ## Equipo
 
-Nombres: Unai
+Nombres: Unai test2
 
 Metodología: `Spec-Driven`

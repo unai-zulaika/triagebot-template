@@ -1,0 +1,555 @@
+{
+  "_doc": "Tickets de seed_tickets.json etiquetados a mano. split=diseño: los 30 que se miraron al construir el grafo (sus resultados están inflados). split=prueba: 20 etiquetados antes de probar el grafo con ellos; es la cifra honesta. component=null: el ticket no cae en ningún componente del grafo.",
+  "tickets": [
+    {
+      "seed_index": 0,
+      "title": "Añadir filtro por estado en el listado de pedidos",
+      "description": "Me vendría muy bien poder filtrar los pedidos por estado (pendiente, enviado, entregado) para no revisarlos todos uno a uno.",
+      "gold": {
+        "category": "feature_request",
+        "priority": "P3",
+        "component": "operaciones"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 1,
+      "title": "¿Cómo solicito acceso de solo lectura al cuadro de mando de dirección?",
+      "description": "Para preparar un informe necesito consultar el panel de dirección, aunque sea solo de lectura. ¿Cómo pido ese permiso?",
+      "gold": {
+        "category": "question",
+        "priority": "P3",
+        "component": "intranet"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 6,
+      "title": "Sería útil poder exportar los tickets a Excel",
+      "description": "Para hacer informes mensuales tendría que pasar los datos a una hoja de cálculo. ¿Podríais añadir un botón de exportar a Excel en el listado de tickets?",
+      "gold": {
+        "category": "feature_request",
+        "priority": "P3",
+        "component": "tickets_tool"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 10,
+      "title": "La VPN rechaza a todo el equipo de teletrabajo",
+      "description": "Desde primera hora ninguno de los que trabajamos en remoto podemos conectar a la VPN. Sale 'authentication failed' aunque la contraseña es correcta.",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "red"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 12,
+      "title": "Se ha caído la centralita y no entran llamadas",
+      "description": "El teléfono de atención al cliente no recibe llamadas desde hace 20 minutos. Los clientes no pueden contactarnos.",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "telefonia"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 13,
+      "title": "La exportación a Excel del CRM sale con las columnas desordenadas",
+      "description": "Cuando exporto la lista de oportunidades a Excel, las columnas no coinciden con las cabeceras: el nombre del cliente aparece bajo 'importe'.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "crm"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 17,
+      "title": "Los gráficos del dashboard de ventas aparecen en blanco",
+      "description": "Entro al panel de KPIs y las tarjetas con números cargan, pero los gráficos salen completamente vacíos. Probé en Chrome y en Edge igual.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "intranet"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 18,
+      "title": "El total de la factura sale mal en el ERP",
+      "description": "Al generar una factura con descuento, el total no resta el descuento. El subtotal está bien pero el importe final está inflado.",
+      "gold": {
+        "category": "bug",
+        "priority": "P2",
+        "component": "erp"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 19,
+      "title": "¿Dónde puedo descargar mi nómina del mes pasado?",
+      "description": "Necesito la nómina de mayo para un trámite del banco y no sé en qué apartado del portal se descargan las anteriores.",
+      "gold": {
+        "category": "question",
+        "priority": "P3",
+        "component": "rrhh"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 24,
+      "title": "La app de fichaje me marca dos entradas seguidas",
+      "description": "A veces, al fichar la entrada, registra dos entradas seguidas sin salida en medio, y luego el cómputo del día queda descuadrado.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "rrhh"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 26,
+      "title": "El CRM se cierra solo al abrir una oportunidad grande",
+      "description": "Cuando abro una oportunidad con muchas líneas de producto, la aplicación se congela unos segundos y se cierra sin avisar.",
+      "gold": {
+        "category": "bug",
+        "priority": "P2",
+        "component": "crm"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 29,
+      "title": "¿Cómo cambio mi contraseña del portal de RRHH?",
+      "description": "Quiero actualizar mi contraseña del portal de empleado pero no encuentro la opción dentro de mi perfil. ¿Dónde está?",
+      "gold": {
+        "category": "question",
+        "priority": "P3",
+        "component": "rrhh"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 40,
+      "title": "La app de gastos da error al adjuntar el ticket en PDF",
+      "description": "Cuando intento subir el justificante de un gasto en PDF, la aplicación se queda cargando y al final muestra 'algo ha salido mal'. Con imágenes JPG sí funciona.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "gastos"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 43,
+      "title": "No me llega el código de verificación por SMS para entrar",
+      "description": "Al iniciar sesión con doble factor, el SMS con el código no llega nunca y no puedo acceder.",
+      "gold": {
+        "category": "bug",
+        "priority": "P2",
+        "component": "seguridad"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 44,
+      "title": "La web corporativa muestra error y la están viendo clientes",
+      "description": "La página pública de la empresa devuelve 'Service Unavailable'. Nos están escribiendo clientes preguntando si hemos cerrado.",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "web_cliente"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 54,
+      "title": "Mi portátil no arranca y tengo presentación al comité en 1 hora",
+      "description": "Esta mañana el portátil se queda en una pantalla azul al encender. Tengo que presentar al comité de dirección a las 11:00 y todo está en este equipo.",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "hardware"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 56,
+      "title": "Posible fuga: he enviado datos a un destinatario equivocado",
+      "description": "Acabo de mandar por error un correo con datos de clientes a una dirección externa que no era. ¿Qué hago de inmediato?",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "seguridad"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 62,
+      "title": "Propuesta: integrar el calendario del CRM con Outlook",
+      "description": "Sería muy práctico que las reuniones que creo en el CRM aparecieran también en mi calendario de Outlook automáticamente.",
+      "gold": {
+        "category": "feature_request",
+        "priority": "P3",
+        "component": "crm"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 71,
+      "title": "No puedo acceder al CRM y tengo una demo con cliente en 30 minutos",
+      "description": "Al entrar en el CRM me sale 'error 500' una y otra vez. Tengo una demostración con un cliente importante dentro de media hora y necesito sacar su ficha.",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "crm"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 78,
+      "title": "El buscador de la intranet no devuelve resultados",
+      "description": "Busque lo que busque en la intranet, siempre dice 'no se han encontrado resultados', incluso con documentos que sé que existen.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "intranet"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 92,
+      "title": "Error al adjuntar archivos de más de 10 MB en la herramienta de tickets",
+      "description": "Si el adjunto pasa de 10 MB, el formulario se recarga y pierdo todo lo que había escrito, sin ningún mensaje de error.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "tickets_tool"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 94,
+      "title": "Toda la planta 3 se ha quedado sin red",
+      "description": "Ningún equipo de la tercera planta tiene conexión desde hace 20 minutos. Nadie puede trabajar. Somos unas 40 personas.",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "red"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 102,
+      "title": "Outlook duplica los correos en la bandeja de entrada",
+      "description": "Desde ayer cada correo que recibo aparece dos o tres veces. Si borro uno, los demás se quedan.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "correo"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 104,
+      "title": "Llevo sin poder imprimir desde que cambiaron mi ordenador",
+      "description": "Me cambiaron el equipo la semana pasada y desde entonces no consigo imprimir; no me aparece ninguna impresora disponible.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "hardware"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 108,
+      "title": "Bloqueo total: nadie del almacén puede escanear productos",
+      "description": "Las pistolas de código de barras del almacén han dejado de comunicarse con el sistema y no se puede registrar ninguna entrada ni salida de mercancía.",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "operaciones"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 126,
+      "title": "El TPV de recepción no cobra a los clientes",
+      "description": "El datáfono de recepción da error en todas las tarjetas desde hace media hora y hay cola de gente esperando para pagar.",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "operaciones"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 127,
+      "title": "Añadir notificación por correo cuando me asignan un ticket",
+      "description": "Ahora mismo me entero por casualidad de que tengo un ticket nuevo. Sería ideal recibir un aviso por correo en cuanto me lo asignan.",
+      "gold": {
+        "category": "feature_request",
+        "priority": "P3",
+        "component": "tickets_tool"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 136,
+      "title": "No se actualizan los precios en el catálogo del ERP",
+      "description": "Hemos cambiado tarifas pero el catálogo sigue mostrando los precios antiguos al crear pedidos. ¿Hay que refrescar algo?",
+      "gold": {
+        "category": "bug",
+        "priority": "P2",
+        "component": "erp"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 138,
+      "title": "Alguien ha intentado entrar en mi cuenta de correo",
+      "description": "He recibido tres avisos de intento de inicio de sesión desde una ubicación que no es la mía. Me preocupa que esté comprometida, ¿qué hago?",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "seguridad"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 139,
+      "title": "La herramienta de encuestas internas no deja enviar respuestas",
+      "description": "He rellenado la encuesta de clima laboral y al darle a enviar no pasa nada; el botón parece que no responde.",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "intranet"
+      },
+      "split": "diseño"
+    },
+    {
+      "seed_index": 3,
+      "title": "El visor de PDF de la intranet no muestra la última página",
+      "description": "Al abrir documentos largos en el visor integrado, siempre falta la última página. Si lo descargo y lo abro aparte, está completa.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "intranet"
+      }
+    },
+    {
+      "seed_index": 5,
+      "title": "Permitir asignar un ticket a varias personas",
+      "description": "A veces una incidencia la tenemos que resolver entre dos. Estaría bien poder asignar el mismo ticket a más de una persona.",
+      "split": "prueba",
+      "gold": {
+        "category": "feature_request",
+        "priority": "P3",
+        "component": "tickets_tool"
+      }
+    },
+    {
+      "seed_index": 14,
+      "title": "El total de horas del mes no coincide con mi calendario",
+      "description": "El resumen de jornada me da menos horas de las que he trabajado según mi calendario. Creo que no cuenta bien algún día.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "rrhh"
+      }
+    },
+    {
+      "seed_index": 20,
+      "title": "El generador de etiquetas de envío imprime el código de barras cortado",
+      "description": "Las etiquetas salen con el código de barras a medias, así que el escáner de la transportista no lo lee y hay que repetirlas a mano.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P2",
+        "component": "operaciones"
+      }
+    },
+    {
+      "seed_index": 21,
+      "title": "Los enlaces del boletín interno llevan a página de error",
+      "description": "Los enlaces del último boletín de comunicación interna dan todos 404. Parece que apuntan a una ruta antigua de la intranet.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "intranet"
+      }
+    },
+    {
+      "seed_index": 32,
+      "title": "La numeración de las facturas tiene un salto",
+      "description": "He notado que entre dos facturas consecutivas hay un número que falta. ¿Es normal o se ha perdido una factura?",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P2",
+        "component": "erp"
+      }
+    },
+    {
+      "seed_index": 34,
+      "title": "La lista de contactos del CRM no se ordena alfabéticamente",
+      "description": "Al abrir mis contactos en el CRM aparecen en un orden aparentemente aleatorio en lugar de por orden alfabético.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "crm"
+      }
+    },
+    {
+      "seed_index": 35,
+      "title": "Añadir exportación a PDF del resumen mensual de gastos",
+      "description": "Para presentar mis gastos a mi responsable me vendría bien poder generar un PDF con el resumen del mes de un solo clic.",
+      "split": "prueba",
+      "gold": {
+        "category": "feature_request",
+        "priority": "P3",
+        "component": "gastos"
+      }
+    },
+    {
+      "seed_index": 42,
+      "title": "El total del carrito de pedidos internos no se actualiza al quitar líneas",
+      "description": "Si elimino una línea del pedido interno de material, el importe total sigue mostrando el valor anterior hasta que recargo la página.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P2",
+        "component": "operaciones"
+      }
+    },
+    {
+      "seed_index": 48,
+      "title": "El selector de fechas del portal de viajes no deja elegir el regreso",
+      "description": "Al reservar un viaje, puedo poner la fecha de ida pero el calendario de vuelta aparece bloqueado y no permite seleccionar nada.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "intranet"
+      }
+    },
+    {
+      "seed_index": 57,
+      "title": "La app móvil de fichaje se cierra al abrirla",
+      "description": "Desde la última actualización, la app de fichaje del móvil se abre y se cierra sola al instante, sin que me dé tiempo a fichar.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P2",
+        "component": "rrhh"
+      }
+    },
+    {
+      "seed_index": 65,
+      "title": "La hoja de cálculo compartida tarda muchísimo en abrir",
+      "description": "El Excel de seguimiento del equipo, que está en la unidad compartida, tarda más de cinco minutos en abrirse y a veces se queda colgado.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": null
+      }
+    },
+    {
+      "seed_index": 68,
+      "title": "La pantalla de inicio de sesión carga muy lenta por las mañanas",
+      "description": "Entre las 8 y las 9 la pantalla de login de la intranet tarda más de un minuto en cargar; el resto del día va normal.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "seguridad"
+      }
+    },
+    {
+      "seed_index": 74,
+      "title": "Se ha borrado la carpeta compartida del proyecto",
+      "description": "La unidad de red \\\\fileserver\\proyectos\\Q3 ha desaparecido entera. Ahí estaba toda la documentación del cierre de trimestre.",
+      "split": "prueba",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": null
+      }
+    },
+    {
+      "seed_index": 76,
+      "title": "No puedo firmar el contrato y el cliente espera al teléfono",
+      "description": "La herramienta de firma electrónica se queda colgada en 'procesando'. Tengo al cliente al teléfono esperando para cerrar la operación hoy.",
+      "split": "prueba",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": null
+      }
+    },
+    {
+      "seed_index": 99,
+      "title": "El enlace de restablecer contraseña ha caducado antes de usarlo",
+      "description": "Pedí restablecer la contraseña, tardé cinco minutos en abrir el correo y al pinchar el enlace ya decía que había caducado.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "seguridad"
+      }
+    },
+    {
+      "seed_index": 106,
+      "title": "El cliente no puede acceder al portal y firma hoy",
+      "description": "Un cliente nos dice que no puede entrar al portal de cliente para revisar el documento que tiene que firmar hoy. Da 'acceso denegado'.",
+      "split": "prueba",
+      "gold": {
+        "category": "urgent",
+        "priority": "P1",
+        "component": "web_cliente"
+      }
+    },
+    {
+      "seed_index": 120,
+      "title": "La barra de progreso de la subida se queda al 99%",
+      "description": "Cuando subo un documento a la intranet, la barra llega al 99% y se queda ahí indefinidamente, aunque el archivo a veces sí termina subiéndose.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": null
+      }
+    },
+    {
+      "seed_index": 121,
+      "title": "El móvil de empresa no sincroniza el correo",
+      "description": "El correo en el móvil corporativo se quedó en el de hace tres días. En el ordenador llega todo bien, pero en el teléfono no entra nada nuevo.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "correo"
+      }
+    },
+    {
+      "seed_index": 135,
+      "title": "El filtro de fechas del informe ignora el año",
+      "description": "Si filtro un informe entre enero y marzo, me trae datos de enero a marzo de todos los años, no solo del actual.",
+      "split": "prueba",
+      "gold": {
+        "category": "bug",
+        "priority": "P3",
+        "component": "intranet"
+      }
+    }
+  ]
+}

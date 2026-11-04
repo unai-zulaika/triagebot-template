@@ -53,14 +53,23 @@ def _build_client() -> OpenAI:
     )
 
 
-def _call_llm(client: OpenAI, title: str, description: str) -> str:
+def _call_llm(
+    client: OpenAI,
+    title: str,
+    description: str,
+    system_prompt: str = _SYSTEM_PROMPT,
+    extra_context: str = "",
+) -> str:
+    user_content = f"Titulo: {title}\n\nDescripcion: {description}"
+    if extra_context:
+        user_content = f"{extra_context}\n\n---\n{user_content}"
     response = client.chat.completions.create(
         model=_MODEL,
         temperature=0,
         timeout=_TIMEOUT_S,
         messages=[
-            {"role": "system", "content": _SYSTEM_PROMPT},
-            {"role": "user", "content": f"Titulo: {title}\n\nDescripcion: {description}"},
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_content},
         ],
     )
     return response.choices[0].message.content
@@ -136,3 +145,55 @@ def classify_ticket(title: str, description: str) -> dict:
     except Exception:
         logger.exception("Unexpected error while classifying ticket; using fallback")
         return _fallback()
+
+
+# --- Demo: clasificación con knowledge graph (rama demo/kg-classifier) ---
+
+_KG_SYSTEM_PROMPT = (
+    _SYSTEM_PROMPT
+    + "\n\nAdemas recibes un knowledge graph de la empresa. Usalo:\n"
+    "- tags: SOLO ids de componentes del grafo (max. 3), los afectados por el ticket.\n"
+    "- Aplica las reglas de prioridad del grafo segun la criticidad del componente.\n"
+    '- Anade la clave "reason": una frase corta que cite las entidades del grafo usadas.'
+)
+
+
+def classify_ticket_with_kg(title: str, description: str) -> dict:
+    """Como classify_ticket, pero dando al LLM el knowledge graph como contexto.
+
+    Devuelve category/priority/tags (tags restringidos a componentes del grafo) y,
+    además, la clasificación por reglas del grafo y la razón del LLM. Si el LLM
+    falla, usa la clasificación por reglas del grafo en vez del fallback genérico.
+    """
+    from app import kg  # import local: el modo normal no necesita el grafo
+
+    rules = kg.classify_with_rules(title, description)
+    base = {
+        "category": rules["category"],
+        "priority": rules["priority"],
+        "tags": rules["tags"],
+        "source": "kg_rules",
+        "reason": "; ".join(rules["explanation"]),
+        "kg": rules,
+    }
+    if not os.environ.get("OPENROUTER_API_KEY"):
+        return base
+    try:
+        raw = _call_llm(
+            _build_client(),
+            title,
+            description,
+            system_prompt=_KG_SYSTEM_PROMPT,
+            extra_context=kg.prompt_context(title, description),
+        )
+    except Exception:
+        logger.warning("LLM+KG call failed; using KG rules")
+        return base
+    data = _parse_llm_response(raw)
+    validated = _validate_classification(data) if data else None
+    if validated is None:
+        return base
+    allowed = set(kg.component_ids())
+    tags = [t for t in validated["tags"] if t in allowed] or rules["tags"]
+    reason = data.get("reason") if isinstance(data.get("reason"), str) else ""
+    return {**validated, "tags": tags[:5], "source": "llm+kg", "reason": reason, "kg": rules}
