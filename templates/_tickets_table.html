@@ -1,44 +1,107 @@
+{% set category_labels = {"bug": "Bug", "feature_request": "Mejora", "question": "Pregunta", "urgent": "Urgente"} %}
+{% set category_badge = {
+  "bug": "bg-rose-50 text-rose-700 ring-rose-200",
+  "feature_request": "bg-indigo-50 text-indigo-700 ring-indigo-200",
+  "question": "bg-slate-100 text-slate-700 ring-slate-200",
+  "urgent": "bg-amber-50 text-amber-800 ring-amber-200",
+} %}
+{% set priority_badge = {
+  "P1": "bg-red-600 text-white",
+  "P2": "bg-amber-500 text-white",
+  "P3": "bg-slate-200 text-slate-700",
+} %}
+{% set status_labels = {"open": "Abierto", "in_progress": "En progreso", "resolved": "Resuelto", "closed": "Cerrado"} %}
+{% set status_badge = {
+  "open": "bg-sky-50 text-sky-700 ring-sky-200",
+  "in_progress": "bg-violet-50 text-violet-700 ring-violet-200",
+  "resolved": "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  "closed": "bg-slate-100 text-slate-500 ring-slate-200",
+} %}
+
 {% macro ticket_row(t) %}
-<tr id="ticket-row-{{ t.id }}">
-  <td class="px-3 py-2 text-sm">{{ t.id }}</td>
-  <td class="px-3 py-2 text-sm">{{ t.title }}</td>
-  <td class="px-3 py-2 text-sm">{{ t.category }}</td>
-  <td class="px-3 py-2 text-sm">{{ t.priority }}</td>
-  <td class="px-3 py-2 text-sm">{{ t.tags | join(', ') }}</td>
-  <td class="px-3 py-2 text-sm">
-    <select name="status" hx-patch="/ui/tickets/{{ t.id }}" hx-target="#ticket-row-{{ t.id }}" hx-swap="outerHTML">
-      {% for s in ["open", "in_progress", "resolved", "closed"] %}
-      <option value="{{ s }}" {% if s == t.status %}selected{% endif %}>{{ s }}</option>
-      {% endfor %}
-    </select>
-    <select name="priority" hx-patch="/ui/tickets/{{ t.id }}" hx-target="#ticket-row-{{ t.id }}" hx-swap="outerHTML">
-      {% for p in ["P1", "P2", "P3"] %}
-      <option value="{{ p }}" {% if p == t.priority %}selected{% endif %}>{{ p }}</option>
-      {% endfor %}
-    </select>
+<tr id="ticket-row-{{ t.id }}" class="hover:bg-slate-50">
+  <td class="whitespace-nowrap px-3 py-2.5 text-sm text-slate-500">#{{ t.id }}</td>
+  <td class="px-3 py-2.5 text-sm font-medium text-slate-900">{{ t.title }}</td>
+  <td class="whitespace-nowrap px-3 py-2.5 text-sm">
+    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset {{ category_badge.get(t.category, "bg-slate-100 text-slate-700 ring-slate-200") }}">
+      {{ category_labels.get(t.category, t.category) }}
+    </span>
   </td>
-  <td class="px-3 py-2 text-sm">{{ t.created_at }}</td>
+  <td class="whitespace-nowrap px-3 py-2.5 text-sm">
+    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold {{ priority_badge.get(t.priority, "bg-slate-200 text-slate-700") }}">
+      {{ t.priority }}
+    </span>
+  </td>
+  <td class="px-3 py-2.5 text-sm">
+    {% if t.tags %}
+    <div class="flex flex-wrap gap-1">
+      {% for tag in t.tags %}
+      <span class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    {% else %}
+    <span class="text-slate-400">—</span>
+    {% endif %}
+  </td>
+  <td class="whitespace-nowrap px-3 py-2.5 text-sm">
+    <div class="flex flex-col gap-1.5 sm:flex-row sm:items-center">
+      <select
+        name="status" aria-label="Estado de {{ t.title }}"
+        hx-patch="/ui/tickets/{{ t.id }}" hx-target="#ticket-row-{{ t.id }}" hx-swap="outerHTML"
+        class="rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+      >
+        {% for s in ["open", "in_progress", "resolved", "closed"] %}
+        <option value="{{ s }}" {% if s == t.status %}selected{% endif %}>{{ status_labels[s] }}</option>
+        {% endfor %}
+      </select>
+      <select
+        name="priority" aria-label="Prioridad de {{ t.title }}"
+        hx-patch="/ui/tickets/{{ t.id }}" hx-target="#ticket-row-{{ t.id }}" hx-swap="outerHTML"
+        class="rounded-md border border-slate-300 px-2 py-1 text-xs focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+      >
+        {% for p in ["P1", "P2", "P3"] %}
+        <option value="{{ p }}" {% if p == t.priority %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </td>
+  <td class="whitespace-nowrap px-3 py-2.5 text-sm text-slate-500">{{ t.created_at.strftime("%d/%m/%Y %H:%M") }}</td>
 </tr>
 {% endmacro %}
 
 <div id="tickets-section">
   {% if error %}
-  <p class="mb-3 rounded bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
+  <p role="alert" class="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">{{ error }}</p>
   {% endif %}
-  <table class="min-w-full divide-y divide-slate-200 bg-white shadow-sm ring-1 ring-slate-200 rounded-lg overflow-hidden">
-    <thead class="bg-slate-100">
-      <tr>
-        <th class="px-3 py-2 text-left text-sm font-semibold">ID</th>
-        <th class="px-3 py-2 text-left text-sm font-semibold">Título</th>
-        <th class="px-3 py-2 text-left text-sm font-semibold">Categoría</th>
-        <th class="px-3 py-2 text-left text-sm font-semibold">Prioridad</th>
-        <th class="px-3 py-2 text-left text-sm font-semibold">Tags</th>
-        <th class="px-3 py-2 text-left text-sm font-semibold">Estado</th>
-        <th class="px-3 py-2 text-left text-sm font-semibold">Creado</th>
-      </tr>
-    </thead>
-    <tbody id="tickets-table-body">
-      {% for t in tickets %}{{ ticket_row(t) }}{% endfor %}
-    </tbody>
-  </table>
+
+  <div class="mb-3 flex items-center justify-between">
+    <h2 class="text-base font-semibold">Tickets</h2>
+    <span class="text-sm text-slate-500">{{ tickets|length }} {{ "ticket" if tickets|length == 1 else "tickets" }}</span>
+  </div>
+
+  {% if tickets %}
+  <div class="overflow-x-auto rounded-lg bg-white shadow-sm ring-1 ring-slate-200">
+    <table class="min-w-full divide-y divide-slate-200">
+      <thead class="bg-slate-50">
+        <tr>
+          <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">ID</th>
+          <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Título</th>
+          <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Categoría</th>
+          <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Prioridad</th>
+          <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Tags</th>
+          <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Estado</th>
+          <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Creado</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for t in tickets %}{{ ticket_row(t) }}{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="rounded-lg border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
+    <p class="text-sm font-medium text-slate-700">No hay tickets que coincidan.</p>
+    <p class="mt-1 text-sm text-slate-500">Crea uno nuevo arriba o ajusta los filtros.</p>
+  </div>
+  {% endif %}
 </div>

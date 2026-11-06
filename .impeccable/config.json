@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "templates/index.html"
+        ],
+        "createdAt": "2026-11-05T15:54:38.645Z",
+        "reason": "false positive: detector reads raw tag sizes and can't resolve Tailwind CDN JIT classes (text-2xl/sm:text-3xl on h1, text-base on h2, text-sm body); browser screenshot confirmed real size hierarchy renders correctly"
+      }
+    ]
+  }
+}
